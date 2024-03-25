@@ -1,0 +1,5 @@
+2captcha_python==1.2.2
+python-dotenv==1.0.1
+selenium==4.18.1
+selenium_stealth==1.0.6
+webdriver_manager==4.0.1
