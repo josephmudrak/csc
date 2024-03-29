@@ -43,8 +43,12 @@ solver = TwoCaptcha(os.environ.get("TWOCAPTCHA_API_KEY"))
 
 start = True
 
+text_field = 0
+select = 1
+
 for line in file.readlines():
     if start:
+        print(f"Trying card {line}")
         global cc
 
         cc = line.split("|")
@@ -52,34 +56,74 @@ for line in file.readlines():
         for i in range(4):
             cc[i - 1] = cc[i - 1].replace("\n", "")  # Remove line breaks
 
-        number = cc[0]
-        expiry = cc[1] + cc[2][len(cc[2]) - 2 :]  # Convert MM, YYYY to MMYY
-        cvc = cc[3]
+        number = str(cc[0])
+        expiry = str(
+            cc[1] + cc[2][len(cc[2]) - 2 :]
+        )  # Convert MM, YYYY to MMYY
+        cvc = str(cc[3])
 
+        driver.switch_to.default_content()
+
+        driver.find_element(By.XPATH, "//input[@id='email']").send_keys(
+            Keys.CONTROL + "a"
+        )
+        driver.find_element(By.XPATH, "//input[@id='email']").send_keys(
+            Keys.DELETE
+        )
         driver.find_element(By.XPATH, "//input[@id='email']").send_keys(
             "accnotreal1337@proton.me"
         )
-        driver.find_element(By.XPATH, "//input[@id='TextField0']").send_keys(
-            "Morgan"
-        )
-        driver.find_element(By.XPATH, "//input[@id='TextField1']").send_keys(
-            "LaHaye"
-        )
-        driver.find_element(By.XPATH, "//input[@id='TextField2']").send_keys(
-            "14 Main St"
-        )
-        driver.find_element(By.XPATH, "//input[@id='TextField3']").send_keys(
-            "Ballymahon"
-        )
-        driver.find_element(By.XPATH, "//select[@id='Select1']").send_keys(
-            "Longford"
-        )
-        driver.find_element(By.XPATH, "//input[@id='TextField4']").send_keys(
-            "N39 C3X4"
-        )
-        driver.find_element(By.XPATH, "//input[@id='TextField4']").send_keys(
-            Keys.TAB
-        )
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field}']"
+        ).send_keys(Keys.CONTROL + "a")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field}']"
+        ).send_keys(Keys.DELETE)
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field}']"
+        ).send_keys("Morgan")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 1}']"
+        ).send_keys(Keys.CONTROL + "a")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 1}']"
+        ).send_keys(Keys.DELETE)
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 1}']"
+        ).send_keys("LaHaye")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 2}']"
+        ).send_keys(Keys.CONTROL + "a")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 2}']"
+        ).send_keys(Keys.DELETE)
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 2}']"
+        ).send_keys("14 Main St")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 3}']"
+        ).send_keys(Keys.CONTROL + "a")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 3}']"
+        ).send_keys(Keys.DELETE)
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 3}']"
+        ).send_keys("Ballymahon")
+        driver.find_element(
+            By.XPATH, f"//select[@id='Select{select}']"
+        ).send_keys("Longford")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 4}']"
+        ).send_keys(Keys.CONTROL + "a")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 4}']"
+        ).send_keys(Keys.DELETE)
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 4}']"
+        ).send_keys("N39 C3X4")
+        driver.find_element(
+            By.XPATH, f"//input[@id='TextField{text_field + 4}']"
+        ).send_keys(Keys.TAB)
         WebDriverWait(driver, 20).until(
             EC.frame_to_be_available_and_switch_to_it(
                 (
@@ -132,10 +176,5 @@ for line in file.readlines():
         ).click()
 
         time.sleep(15)
-        err = driver.find_element(By.XPATH, "//div[@class='sdr03sa']")
-        decline_text = "Your card was declined. Try again or use a different payment method."
-
-        if decline_text in err.text:
-            continue
-
-        start = False
+        text_field += 7
+        select += 2
